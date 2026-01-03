@@ -97,7 +97,7 @@ services:
 
 
   giteadb:
-    image: lscr.io/linuxserver/mariadb:latest
+    image: lscr.io/linuxserver/mariadb:${MYSQL_VERSION}
     container_name: giteadb
     hostname: giteadb
     env_file:
