@@ -54,7 +54,7 @@ services:
     restart: unless-stopped
 
   gitea:
-    image: gitea/gitea:latest
+    image: gitea/gitea:${GITEA_VERSION}
     container_name: gitea
     hostname: gitea
     depends_on:
