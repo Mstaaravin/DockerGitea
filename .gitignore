@@ -1,2 +1,4 @@
-data
-mariadb
+gitea/*
+gitea_db/*
+!gitea_db/custom.cnf
+!gitea_db/backup.conf
