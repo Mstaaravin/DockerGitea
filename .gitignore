@@ -1,4 +1,15 @@
+# Runtime secrets - never commit
+.env
+secrets/
+
+# Gitea data
 gitea/*
+!gitea/gitea/conf/app.ini
+
+# MariaDB data
 gitea_db/*
 !gitea_db/custom.cnf
 !gitea_db/backup.conf
+
+# Traefik ACME
+traefik/acme.json

@@ -1,46 +1,33 @@
 ---
 services:
+
   traefik:
     image: traefik:v3
+    container_name: traefik
+    restart: unless-stopped
     command:
-      # API Dashboard
       - "--api.dashboard=true"
       - "--api.insecure=true"
-      # Providers
-      - "--providers.swarm=true"
-      - "--providers.swarm.endpoint=unix:///var/run/docker.sock"
-      - "--providers.swarm.exposedbydefault=false"
-      - "--providers.swarm.watch=true"
-      - "--providers.swarm.network=gitea_default"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
       - "--providers.file.directory=/etc/traefik/certs"
       - "--providers.file.watch=true"
-      # Entry Points
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
-      # HTTP to HTTPS Redirect
       - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
       - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
-      # ACME / Let's Encrypt
       - "--certificatesresolvers.cloudflare.acme.dnschallenge=true"
       - "--certificatesresolvers.cloudflare.acme.dnschallenge.provider=cloudflare"
       - "--certificatesresolvers.cloudflare.acme.dnschallenge.resolvers=1.1.1.1:53,8.8.8.8:53"
       - "--certificatesresolvers.cloudflare.acme.email=user@example.com"
       - "--certificatesresolvers.cloudflare.acme.storage=/etc/traefik/acme.json"
-      # Servers Transport
       - "--serversTransport.insecureSkipVerify=true"
-      # Logging
       - "--log.level=info"
       - "--log.format=json"
     ports:
-      - target: 80
-        published: 80
-        mode: host
-      - target: 443
-        published: 443
-        mode: host
-      - target: 8080
-        published: 8080
-        mode: host
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./traefik/certs:/etc/traefik/certs:ro
@@ -50,24 +37,22 @@ services:
       - CLOUDFLARE_DNS_API_TOKEN_FILE=/run/secrets/cloudflare_dns_api_token
     secrets:
       - cloudflare_dns_api_token
-    deploy:
-      placement:
-        constraints: [node.role == manager]
-      restart_policy:
-        condition: any
-      labels:
-        - "traefik.enable=true"
-        - "traefik.http.routers.dashboard.rule=Host(`traefik.immich.lan`)"
-        - "traefik.http.routers.dashboard.entrypoints=websecure"
-        - "traefik.http.routers.dashboard.tls=true"
-        - "traefik.http.routers.dashboard.service=api@internal"
-        - "traefik.http.middlewares.dashboard-ipwhitelist.ipwhitelist.sourcerange=172.16.254.0/24"
-        - "traefik.http.routers.dashboard.middlewares=dashboard-ipwhitelist@swarm"
-        - "traefik.http.services.traefik-docker.loadbalancer.server.port=8080"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dashboard.rule=Host(`traefik.gitea.lan`)"
+      - "traefik.http.routers.dashboard.entrypoints=websecure"
+      - "traefik.http.routers.dashboard.tls=true"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.middlewares.dashboard-ipwhitelist.ipwhitelist.sourcerange=172.16.254.0/24"
+      - "traefik.http.routers.dashboard.middlewares=dashboard-ipwhitelist@docker"
+      - "traefik.http.services.traefik-docker.loadbalancer.server.port=8080"
+
 
   gitea:
     image: gitea/gitea:${GITEA_VERSION}
+    container_name: gitea
     hostname: gitea
+    restart: unless-stopped
     env_file:
       - .env
     volumes:
@@ -76,41 +61,33 @@ services:
       - /etc/localtime:/etc/localtime:ro
     environment:
       - USER_UID=${USER_UID}
-      - USER_GID=${USER_UID}
+      - USER_GID=${USER_GID}
       - ROOT_URL=https://gitea.marvin.ar/
       - SSH_DOMAIN=gitea.marvin.ar
       - SSH_PORT=22
     ports:
-      - target: 22
-        published: 22
-        mode: host
-    deploy:
-      restart_policy:
-        condition: any
-      labels:
-        - "traefik.enable=true"
-        # HTTP Configuration
-        - "traefik.http.routers.gitea.rule=Host(`gitea.marvin.ar`)"
-        - "traefik.http.routers.gitea.entrypoints=websecure"
-        - "traefik.http.routers.gitea.tls=true"
-        - "traefik.http.routers.gitea.tls.certresolver=cloudflare"
-        - "traefik.http.services.gitea.loadbalancer.server.port=80"
-        # SSH Configuration
-        - "traefik.tcp.routers.gitea-ssh.rule=HostSNI(`*`)"
-        - "traefik.tcp.routers.gitea-ssh.entrypoints=ssh_gitea"
-        - "traefik.tcp.routers.gitea-ssh.service=gitea-ssh-service"
-        - "traefik.tcp.services.gitea-ssh-service.loadbalancer.server.port=22"
+      - "22:22"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.gitea.rule=Host(`gitea.marvin.ar`)"
+      - "traefik.http.routers.gitea.entrypoints=websecure"
+      - "traefik.http.routers.gitea.tls=true"
+      - "traefik.http.routers.gitea.tls.certresolver=cloudflare"
+      - "traefik.http.services.gitea.loadbalancer.server.port=80"
+    depends_on:
+      - gitea_db
+
 
   gitea_db:
     image: lscr.io/linuxserver/mariadb:${MYSQL_VERSION}
+    container_name: gitea_db
     hostname: gitea_db
+    restart: unless-stopped
     env_file:
       - .env
     volumes:
       - ./gitea_db:/config
-    deploy:
-      restart_policy:
-        condition: any
+
 
   zabbix-agent:
     image: zabbix/zabbix-agent2:alpine-latest
@@ -125,6 +102,7 @@ services:
       - ZBX_HOSTNAME=ct-gitea
       - TZ=America/Argentina/Buenos_Aires
 
+
 secrets:
   cloudflare_dns_api_token:
-    external: true
+    file: ./secrets/cloudflare_dns_api_token
