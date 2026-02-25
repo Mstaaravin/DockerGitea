@@ -1,6 +1,6 @@
-# Runtime secrets - never commit
+# Runtime secrets - never commit plaintext
 .env
-secrets/
+secrets/cloudflare_dns_api_token
 
 # Gitea data
 gitea/*
