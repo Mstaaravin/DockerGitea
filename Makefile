@@ -38,3 +38,7 @@ clean:
 
 edit-env:
 	sops $(SOPS_DOTENV) .env.enc
+
+recreate: decrypt
+	docker compose up -d --force-recreate
+	@$(MAKE) clean
