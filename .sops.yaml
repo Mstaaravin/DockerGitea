@@ -1,6 +1,0 @@
-creation_rules:
-  - path_regex: \.env(\..*)?$
-    age: age1g7nfdmxh9vuktyrkvl6d2kq5lhvtn0weavmklpvmcynkuqalkuys8fyac7
-
-  - path_regex: secrets/.*
-    age: age1g7nfdmxh9vuktyrkvl6d2kq5lhvtn0weavmklpvmcynkuqalkuys8fyac7

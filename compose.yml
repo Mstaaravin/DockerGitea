@@ -4,7 +4,6 @@ services:
   traefik:
     image: traefik:v3
     container_name: traefik
-    restart: unless-stopped
     command:
       - "--api.dashboard=true"
       - "--api.insecure=true"
@@ -46,13 +45,15 @@ services:
       - "traefik.http.middlewares.dashboard-ipwhitelist.ipwhitelist.sourcerange=172.16.254.0/24"
       - "traefik.http.routers.dashboard.middlewares=dashboard-ipwhitelist@docker"
       - "traefik.http.services.traefik-docker.loadbalancer.server.port=8080"
+    restart: unless-stopped
 
 
   gitea:
     image: gitea/gitea:${GITEA_VERSION}
     container_name: gitea
     hostname: gitea
-    restart: unless-stopped
+    depends_on:
+      - gitea_db
     env_file:
       - .env
     volumes:
@@ -74,25 +75,23 @@ services:
       - "traefik.http.routers.gitea.tls=true"
       - "traefik.http.routers.gitea.tls.certresolver=cloudflare"
       - "traefik.http.services.gitea.loadbalancer.server.port=80"
-    depends_on:
-      - gitea_db
+    restart: unless-stopped
 
 
   gitea_db:
     image: lscr.io/linuxserver/mariadb:${MYSQL_VERSION}
     container_name: gitea_db
     hostname: gitea_db
-    restart: unless-stopped
     env_file:
       - .env
     volumes:
       - ./gitea_db:/config
+    restart: unless-stopped
 
 
   zabbix-agent:
     image: zabbix/zabbix-agent2:alpine-latest
     container_name: zabbix-agent2
-    restart: unless-stopped
     ports:
       - "10050:10050"
     volumes:
@@ -101,6 +100,7 @@ services:
       - ZBX_SERVER_HOST=172.16.250.15
       - ZBX_HOSTNAME=ct-gitea
       - TZ=America/Argentina/Buenos_Aires
+    restart: unless-stopped
 
 
 secrets:
