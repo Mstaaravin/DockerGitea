@@ -71,7 +71,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ./data:/data
+      - ./gitea:/data
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     environment:
@@ -101,13 +101,13 @@ services:
         - "traefik.tcp.routers.gitea-ssh.service=gitea-ssh-service"
         - "traefik.tcp.services.gitea-ssh-service.loadbalancer.server.port=22"
 
-  giteadb:
+  gitea_db:
     image: lscr.io/linuxserver/mariadb:${MYSQL_VERSION}
-    hostname: giteadb
+    hostname: gitea_db
     env_file:
       - .env
     volumes:
-      - ./mariadb:/config
+      - ./gitea_db:/config
     deploy:
       restart_policy:
         condition: any
