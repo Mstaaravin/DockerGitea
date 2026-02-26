@@ -2,6 +2,15 @@
 
 Self-hosted [Gitea](https://gitea.com) instance with [Traefik](https://traefik.io) as a reverse proxy, automatic TLS via Cloudflare DNS challenge, and MariaDB as the database backend.
 
+## Table of contents
+
+- [Stack](#stack)
+- [Requirements](#requirements)
+- [Setup](#setup)
+- [Backup](#backup)
+- [Directory structure](#directory-structure)
+- [Notes](#notes)
+
 ## Stack
 
 | Service | Image | Description |
