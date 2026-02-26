@@ -1,6 +1,12 @@
 ---
 services:
 
+  traefik-init:
+    image: busybox
+    volumes:
+      - ./traefik:/traefik
+    command: sh -c "touch /traefik/acme.json && chmod 600 /traefik/acme.json"
+
   traefik:
     image: traefik:v3
     container_name: traefik
@@ -18,7 +24,7 @@ services:
       - "--certificatesresolvers.cloudflare.acme.dnschallenge=true"
       - "--certificatesresolvers.cloudflare.acme.dnschallenge.provider=cloudflare"
       - "--certificatesresolvers.cloudflare.acme.dnschallenge.resolvers=1.1.1.1:53,8.8.8.8:53"
-      - "--certificatesresolvers.cloudflare.acme.email=user@example.com"
+      - "--certificatesresolvers.cloudflare.acme.email=${CLOUDFLARE_EMAIL}"
       - "--certificatesresolvers.cloudflare.acme.storage=/etc/traefik/acme.json"
       - "--serversTransport.insecureSkipVerify=true"
       - "--log.level=info"
@@ -32,7 +38,7 @@ services:
       - ./traefik/certs:/etc/traefik/certs:ro
       - ./traefik/acme.json:/etc/traefik/acme.json
     environment:
-      - TZ=America/Argentina/Buenos_Aires
+      - TZ=${TZ}
       - CLOUDFLARE_DNS_API_TOKEN=${CLOUDFLARE_DNS_API_TOKEN}
     labels:
       - "traefik.enable=true"
@@ -43,6 +49,9 @@ services:
       - "traefik.http.middlewares.dashboard-ipwhitelist.ipwhitelist.sourcerange=172.16.254.0/24"
       - "traefik.http.routers.dashboard.middlewares=dashboard-ipwhitelist@docker"
       - "traefik.http.services.traefik-docker.loadbalancer.server.port=8080"
+    depends_on:
+      traefik-init:
+        condition: service_completed_successfully
     restart: unless-stopped
 
 
