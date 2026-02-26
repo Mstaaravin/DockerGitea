@@ -75,6 +75,16 @@ Traefik will automatically request a TLS certificate on first boot. Gitea's init
     └── certs/         # Optional local certificates
 ```
 
+## Backup
+
+Database backups can be automated using [backup-db.sh](https://github.com/Mstaaravin/HomelabScripts/blob/main/scripts/backup-db.md) from [HomelabScripts](https://github.com/Mstaaravin/HomelabScripts). It reads credentials directly from the container's environment variables — no extra configuration needed.
+
+A ready-to-use config file is included at `gitea_db/backup.conf`. Example cron entry:
+
+```bash
+0 3 * * * /usr/local/bin/backup-db.sh /path/to/gitea_db/backup.conf
+```
+
 ## Notes
 
 - `traefik/acme.json` is created automatically on first run with the correct permissions.
