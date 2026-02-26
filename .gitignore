@@ -1,10 +1,8 @@
 # Secrets - never commit
 .env
-secrets/
 
 # Gitea data
 gitea/*
-!gitea/gitea/conf/app.ini
 
 # MariaDB data
 gitea_db/*
