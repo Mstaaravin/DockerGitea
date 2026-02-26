@@ -106,8 +106,3 @@ services:
       - ZBX_HOSTNAME=ct-gitea
       - TZ=America/Argentina/Buenos_Aires
     restart: unless-stopped
-
-
-secrets:
-  cloudflare_dns_api_token:
-    file: ./secrets/cloudflare_dns_api_token
