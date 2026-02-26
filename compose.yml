@@ -2,6 +2,7 @@
 services:
 
   traefik-init:
+    container_name: traefik-init
     image: busybox
     volumes:
       - ./traefik:/traefik
