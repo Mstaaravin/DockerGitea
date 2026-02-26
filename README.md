@@ -8,6 +8,7 @@ Self-hosted [Gitea](https://gitea.com) instance with [Traefik](https://traefik.i
 - [Requirements](#requirements)
 - [Setup](#setup)
 - [Backup](#backup)
+- [Local TLS certificates](#local-tls-certificates)
 - [Directory structure](#directory-structure)
 - [Notes](#notes)
 
@@ -93,6 +94,12 @@ A ready-to-use config file is included at `gitea_db/backup.conf`. Example cron e
 ```bash
 0 3 * * * /usr/local/bin/backup-db.sh /path/to/gitea_db/backup.conf
 ```
+
+## Local TLS certificates
+
+For LAN domains that can't use the Cloudflare ACME resolver, Traefik loads certificates from `traefik/certs/` via its file provider. Example self-signed certificates for `gitea.lan` are included.
+
+Certificates can be generated with [Certgen](https://github.com/Mstaaravin/Certgen). See [`traefik/certs/README.md`](traefik/certs/README.md) for details.
 
 ## Notes
 
