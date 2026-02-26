@@ -1,8 +1,8 @@
 # traefik/certs
 
-This directory contains TLS certificates for Traefik's file provider. It is used for **local/LAN domains** that cannot use the Cloudflare ACME resolver (e.g. `*.lan` domains).
+This directory is the designated location for TLS certificates used by Traefik's file provider. Place here your self-signed or locally-generated certificates for **LAN domains** that cannot use the Cloudflare ACME resolver (e.g. `*.lan` domains).
 
-The included files (`gitea.lan.*`) are self-signed example certificates and should be replaced with your own.
+Certificate files (`.crt`, `.key`, `.toml`) are intentionally excluded from version control.
 
 ## How it works
 
