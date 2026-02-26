@@ -33,9 +33,7 @@ services:
       - ./traefik/acme.json:/etc/traefik/acme.json
     environment:
       - TZ=America/Argentina/Buenos_Aires
-      - CLOUDFLARE_DNS_API_TOKEN_FILE=/run/secrets/cloudflare_dns_api_token
-    secrets:
-      - cloudflare_dns_api_token
+      - CLOUDFLARE_DNS_API_TOKEN=${CLOUDFLARE_DNS_API_TOKEN}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.dashboard.rule=Host(`traefik.gitea.lan`)"
