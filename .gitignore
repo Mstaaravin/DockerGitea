@@ -11,3 +11,8 @@ gitea_db/*
 
 # Traefik ACME
 traefik/acme.json
+
+# Traefik certificates (user-provided, never commit)
+traefik/certs/*.crt
+traefik/certs/*.key
+traefik/certs/*.toml
