@@ -42,7 +42,7 @@ services:
       - CLOUDFLARE_DNS_API_TOKEN=${CLOUDFLARE_DNS_API_TOKEN}
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.dashboard.rule=Host(`traefik.gitea.lan`)"
+      - "traefik.http.routers.dashboard.rule=Host(`${TRAEFIK_DOMAIN}`)"
       - "traefik.http.routers.dashboard.entrypoints=websecure"
       - "traefik.http.routers.dashboard.tls=true"
       - "traefik.http.routers.dashboard.service=api@internal"
@@ -70,14 +70,14 @@ services:
     environment:
       - USER_UID=${USER_UID}
       - USER_GID=${USER_GID}
-      - ROOT_URL=https://gitea.marvin.ar/
-      - SSH_DOMAIN=gitea.marvin.ar
+      - ROOT_URL=https://${GITEA_DOMAIN}/
+      - SSH_DOMAIN=${GITEA_DOMAIN}
       - SSH_PORT=22
     ports:
       - "22:22"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.gitea.rule=Host(`gitea.marvin.ar`)"
+      - "traefik.http.routers.gitea.rule=Host(`${GITEA_DOMAIN}`)"
       - "traefik.http.routers.gitea.entrypoints=websecure"
       - "traefik.http.routers.gitea.tls=true"
       - "traefik.http.routers.gitea.tls.certresolver=cloudflare"
