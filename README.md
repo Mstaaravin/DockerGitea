@@ -59,7 +59,7 @@ The dashboard is restricted by IP. Edit the middleware in `compose.yml` to match
 docker compose up -d
 ```
 
-Traefik will automatically request a TLS certificate on first boot. Gitea's initial setup wizard will be available at `https://<GITEA_DOMAIN>`.
+Traefik will automatically request a TLS certificate on first boot. Gitea's initial setup wizard will be available at `https://<GITEA_DOMAIN>` once the DNS A record is properly configured.
 
 ## Directory structure
 
@@ -78,4 +78,6 @@ Traefik will automatically request a TLS certificate on first boot. Gitea's init
 ## Notes
 
 - `traefik/acme.json` is created automatically on first run with the correct permissions.
-- The `zabbix-agent` service is included as a reference example for monitoring integration. Adjust `ZBX_SERVER_HOST` and `ZBX_HOSTNAME` to match your Zabbix setup, or remove it if not needed.
+- The `zabbix-agent` service is included as a reference example for monitoring integration. Adjust `ZBX_SERVER_HOST`,`ZBX_HOSTNAME` and `ZBX_STARTAGENTS` to match your Zabbix setup, or remove it if not needed.
+- Extra supported variables for zabbix-agent can be added from [https://hub.docker.com/r/zabbix/zabbix-agent2#other-variables](https://hub.docker.com/r/zabbix/zabbix-agent2#other-variables)
+
